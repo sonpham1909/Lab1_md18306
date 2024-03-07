@@ -1,5 +1,6 @@
 package com.example.lab1_md18306;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,7 +10,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -20,11 +24,12 @@ import java.util.concurrent.TimeUnit;
 public class LoginWithPhone extends AppCompatActivity {
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     String mVerifacationId;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_login_with_phone);
         EditText edtPhone = findViewById(R.id.edtPhone);
         EditText edtOtp = findViewById(R.id.edtOTP);
@@ -60,7 +65,8 @@ public class LoginWithPhone extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 // Xử lý khi xác minh số điện thoại thất bại
-                Toast.makeText(LoginWithPhone.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                String errorMes = e.getMessage();
+                Toast.makeText(LoginWithPhone.this, errorMes, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -74,11 +80,35 @@ public class LoginWithPhone extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Xử lý sự kiện đăng nhập
-                String otp = edtOtp.getText().toString();
+                String userOTP = edtOtp.getText().toString();
                 // Hoàn tất quá trình đăng nhập bằng số điện thoại
                 // ...
+                verifyOTP(userOTP);
             }
         });
 
     }
+    private void verifyOTP(String userOTP) {
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerifacationId, userOTP);
+        signInWithPhoneAuthCredential(credential);
+    }
+
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+
+                mAuth.signInWithCredential(credential).addOnCompleteListener(LoginWithPhone.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            Toast.makeText(LoginWithPhone.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            Toast.makeText(LoginWithPhone.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+    }
+
 }

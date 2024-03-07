@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Lab1_md18306"
         tools:targetApi="31">
         <activity
+            android:name=".AddCities"
+            android:exported="false" />
+        <activity
+            android:name=".PTDN"
+            android:exported="false" />
+        <activity
             android:name=".LoginWithPhone"
             android:exported="false" />
         <activity
@@ -30,7 +36,7 @@
             android:name=".Login"
             android:exported="false" />
         <activity
-            android:name=".PTDN"
+            android:name=".ListItem"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
